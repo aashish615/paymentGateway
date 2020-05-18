@@ -1,0 +1,159 @@
+<div class="container">
+  <div class="row">
+     <h3>Here , we will create razorpay payment gateway with checkout form </h3>
+  </div>
+
+  <div>
+    <h6>Here are five steps to help you to acheive this.</h6>
+
+     <ol>
+       <li> Generate Razorpay key Id <a href="https://dashboard.razorpay.com">https://dashboard.razorpay.com</a></li>
+      <li> After succesfully singup and login , you will get  a razorpay dashboard </li>
+      <li>In setting menu you will get an api key , which we will use later for payment .</li>
+      <li> Now, Import this script in index.html file
+          <pre>
+         src="https://checkout.razorpay.com/v1/razorpay.js"
+      </pre>
+    </li>
+    <li>Now , we are all set for coding</li>
+      </ol>
+  </div>
+
+  <div class="container">
+      <div class="container" style="margin-top:100px;">
+          <div class="payment_modes">
+              <ul class="tab_list">
+                  <li><a [ngClass]="{'active': modalType == 'cash'}" (click)="click('cash')">cash</a></li>
+                  <li><a [ngClass]="{'active': modalType == 'wallet'}" (click)="click('wallet')">wallet</a></li>
+                  <li><a [ngClass]="{'active': modalType == 'card'}" (click)="click('card')">card</a></li>
+                  <li><a [ngClass]="{'active': modalType == 'net_banking'}" (click)="click('net_banking')">net
+                              banking</a></li>
+              </ul>
+              <div class="wallet_tab tabs" *ngIf="modalType == 'wallet'">
+                  <ul>
+                      <li *ngFor="let item of wallet; let i=index;">
+                          <input type="radio" [(ngModel)]="model.wallet" id="wallet-{{i}}" name="name{{i}}" value="{{item.name}}" (change)="onItemWalletChange(item.name)" checked>
+                          <label for="wallet-{{i}}">{{item.name}}</label>
+                      </li>
+
+                      <!-- <select (change)="onChangeCardType($event.target.value)">
+                  <option value="select" selected>Select Card</option>
+                  <option *ngFor='let type of cardsType' [value]="type.key">
+                      {{type.name}}
+                  </option>
+      </select> -->
+                  </ul>
+              </div>
+              <div class="card_tab tabs" *ngIf="modalType == 'card'">
+
+                  <ul>
+                      <li *ngFor="let item of cardsType; let i=index;">
+                          <input type="radio" [(ngModel)]="model.card" id="test-{{i}}" name="list_name{{i}}" value="{{item.key}}" (change)="onItemChange(item.key)" checked>
+                          <label for="test-{{i}}">{{item.name}}</label>
+                      </li>
+                  </ul>
+                  <div class="container">
+                      <div class="row">
+                          <div class="col-md-12">
+                              <ng-container *ngIf="showCardForm">
+                                  <form [formGroup]="cardForm" novalidate>
+                                      <div class="form-group">
+                                        <label for="card-name">Enter Card Holder Name</label>
+                                        <input id="card-name" class="form-control" formControlName="creditName" [(ngModel)]="model.name"
+                                          type="text" placeholder="Enter Card Holder Name" required>
+                                        <div *ngIf="!cardForm.controls.creditName.valid && cardForm.controls.creditName.dirty"
+                                          class="invalid-field">
+                                          Account Holder Name is required
+                                        </div>
+                                      </div>
+                                      <div class="form-group">
+                                        <label for="cc-number">Enter Card Number</label>
+                                        <input id="cc-number" class="form-control" formControlName="creditCard" [(ngModel)]="model.cardNumber"
+                                          type="tel" autocomplete="cc-number" ccNumber placeholder="Enter Card Number" (input)="onSearchChange($event.target.value)">
+                                        <ng-container *ngIf="cardType?.type">
+                                          <span class="credit-card"> <strong> {{cardType?.type | uppercase}} </strong>
+                                            <img src="assets/img/card.svg" alt="">
+                                          </span>
+                                        </ng-container>
+                                        <p *ngIf="cardType?.type">
+                                          <small>{{cardType?.type | titlecase}} number must be in between
+                                            <small *ngFor="let item of cardType?.length;let last = last">{{item}}{{last?'':','}}
+                                            </small>
+                                          </small>
+                                        </p>
+                                        <div *ngIf="!cardForm.controls.creditCard.valid && cardForm.controls.creditCard.dirty"
+                                          class="invalid-field">
+                                          Card number is invalid
+                                        </div>
+                                      </div>
+                                      <div class="form-group">
+                                        <label for="cc-exp-date">Enter Expiration Date </label>
+                                        <input class="form-control" id="cc-exp-date" formControlName="expirationDate"
+                                          [(ngModel)]="model.expiryDate" type="tel" autocomplete="cc-exp" ccExp placeholder="MM/YYYY">
+                                        <div *ngIf="!cardForm.controls.expirationDate.valid && cardForm.controls.expirationDate.dirty"
+                                          class="invalid-field">
+                                          Expiration Date is invalid
+                                        </div>
+                                      </div>
+                                      <div class="form-group">
+                                        <label for="cc-cvc">Enter CVV number </label>
+                                        <input class="form-control" number-only id="cc-cvc" formControlName="cvc" type="text"
+                                          maxlength="4" autocomplete="cc-cvc" ccCvc placeholder="Enter CVV number" [(ngModel)]="model.cvv">
+                                        <div *ngIf="!cardForm.controls.cvc.valid && cardForm.controls.cvc.dirty" class="invalid-field">
+                                          Cvv is invalid
+                                        </div>
+                                        <p *ngIf="cardType?.cvvLength">
+                                          <small>{{cardType?.type | titlecase}} cvv must be in between
+                                            <small *ngFor="let item of cardType?.cvvLength;let last = last">{{item}}
+                                              {{last?'':' or '}}
+                                            </small>digit
+                                          </small>
+                                        </p>
+                                      </div>
+                                    </form>
+                              </ng-container>
+                          </div>
+                      </div>
+                  </div>
+
+              </div>
+              <div class="cash_tab tabs" *ngIf="modalType == 'cash'">
+                  <p>You can Pay with Cash or Cards</p>
+              </div>
+              <div class="net_banking_tab tabs" *ngIf="modalType == 'net_banking'">
+                  <!-- <ul>
+                      <li >
+                          <input type="radio" id="test9" name="radio-group" checked>
+                          <label for="test9">HDFC</label>
+                      </li>
+                      <li>
+                          <input type="radio" id="test10" name="radio-group" checked>
+                          <label for="test10">SBI</label>
+                      </li>
+                      <li>
+                          <input type="radio" id="test11" name="radio-group" checked>
+                          <label for="test11">ICICI</label>
+                      </li>
+                  </ul> -->
+                  <div class="container">
+                      <div class="row">
+                          <div class="col-10 col-offset-2">
+
+                              <select class="form-control" [(ngModel)]="bank" (ngModelChange)="onChange($event)">
+                            <option  [ngValue]="undefined" disabled>Select Bank</option>
+                            <option *ngFor='let controlList of allBanks' [value]="controlList.key">  {{controlList.name}}</option>
+
+                          </select>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <div class="payment_actions">
+                  <button type="button" class="btn btn-success" (click)="paynow('')" style="color: #fff;
+                  background-color: #593196;"> PAY NOW</button>
+                  <button type="button" class="btn btn-outline-danger">CANCEL</button>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
